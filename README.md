@@ -39,7 +39,7 @@ CreditPilot Payment
     		CreditPilotPayment::CHANNEL_CREDIT_PILOT_BANK_CARD => 100318717,
 	);
 
-	$creditPilotPayment = new CreditPilotPayment($providers);
+	$creditPilotPayment = new CreditPilotPayment('user', 'password', $providers);
 
 	// если используется без Laravel, то создаем коннект к БД, в Laravel будет использован Eloquent и connectDb() не нужен
 	$creditPilotPayment->connectDb('mysql', 'localhost', 'creditpilot', 'creditpilot', 'creditpilot', 'tbl_');
