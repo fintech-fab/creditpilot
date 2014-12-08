@@ -457,10 +457,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		$response = curl_exec($ch);
 
-//		if ($actionName !== 'providers2') {
-//			echo $response;
-//		}
-
 		$resultHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		$this->_doParseResponse($response, $actionName, $ch);
