@@ -21,13 +21,13 @@ class PaymentChannelAbstract implements PaymentChannelInterface
 	 * @var string боевая ссылка к АПИ
 	 * @example https://www.kp-dealer.ru:8080/KPDealerWeb/KPBossHttpServer
 	 */
-	public $apiUrl;
+	protected $apiUrl;
 
 	/**
 	 * @var string тестовая ссылка к АПИ
 	 * @example https://test.creditpilot.ru:8080/KPDealerWeb/KPBossHttpServer
 	 */
-	public $apiUrlTest;
+	protected $apiUrlTest;
 
 	/**
 	 * запись в логе после выполнения запросов
