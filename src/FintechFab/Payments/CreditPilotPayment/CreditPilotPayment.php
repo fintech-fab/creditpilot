@@ -22,6 +22,35 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CHANNEL_CREDIT_PILOT_TELE2 = 4;
 	const CHANNEL_CREDIT_PILOT_BANK_CARD = 5;
 
+	public static $errorCodes = array(
+		//Ошибки при отправке платежа или при проверке состояния:
+		-20101 => 'В системе нет пользователя с таким логином (неправильный логин или пароль)',
+		-20102 => 'Пользователь отключен (заблокирован)',
+		-20103 => 'Не найдена касса, соответствующая этому пользователю',
+		-20110 => 'Оплата в пользу сервис-провайдера невозможна',
+		-20117 => 'Недостаточно средств на счету дилера для проведения этого платежа',
+		-20135 => 'Повторный платеж, повторите платеж позднее',
+		-20136 => 'Превышение общей суммы ежедневных платежей провайдера)',
+		-20137 => 'Разрешенное время работы пользователя истекло',
+		-20139 => 'Ошибочная сумма платежа',
+		-20140 => 'Ошибочный номер абонента',
+		-20141 => 'В системе нет терминала с таким номером',
+		-20150 => 'Платеж с таким идентификатором уже существует (не уникальный идентификатор платежа dealerTransactionId для успешных транзакций данного пользователя)',
+		20000  => 'Платеж в очереди',
+		20002  => 'Платеж в обработке',
+		1      => 'Платеж проведен',
+		0      => 'Откат транзакции',
+		-100   => 'Откат транзакции',
+		-200   => 'Откат транзакции',
+		-300   => 'Недостаточно денег на счете дилера',
+		-400   => 'Откат транзакции по требованию',
+		-500   => 'Откат транзакции',
+		-600   => 'Откат транзакции',
+		2      => 'Состояние платежа неизвестно, сбой при осуществлении платежа в биллинг провайдера (в последствии состояние будет изменено на проведен или на один из откатов)',
+		-20300 => 'Системный сбой',
+		-20215 => 'Операция выполняется',
+	);
+
 	public $channelIds = array(
 		self::CHANNEL_CREDIT_PILOT_MTS,
 		self::CHANNEL_CREDIT_PILOT_MEGAFON,
@@ -484,7 +513,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 */
 	private function _doPrepareLog($paymentId, $actionName, $url, $resultHttpCode, $timeBeforeRequest)
 	{
-		if(!isset($this->paymentLog)){
+		if (!isset($this->paymentLog)) {
 			$this->doEnableLogger();
 		}
 
@@ -642,7 +671,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		$this->errorCode = (string)$errorCode;
 		$this->responseError = PaymentsInfo::$aErrorMessages[$this->error];
-
 	}
 
 	/**
@@ -653,6 +681,29 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	public function getErrorCode()
 	{
 		return $this->error;
+	}
+
+	/**
+	 * Код ошибки КредитПилота
+	 *
+	 * @return mixed
+	 */
+	public function getCreditPilotErrorCode()
+	{
+		return $this->errorCode;
+	}
+
+	/**
+	 * Сообщение об ошибке КредитПилота
+	 *
+	 * @return string|null
+	 */
+	public function getCreditPilotErrorMessage()
+	{
+		if(isset(self::$errorCodes[$this->errorCode])){
+			return self::$errorCodes[$this->errorCode];
+		}
+		return null;
 	}
 
 	/**

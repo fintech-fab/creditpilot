@@ -23,18 +23,15 @@ class CreditPilotTest extends TestCase
             $testPassword = '';
 
 			$this->creditPilotPayment = new CreditPilotPayment($testUser, $testPassword, null, true);
-
-			$this->creditPilotPayment->doEnableLogger();
-
 		}
 	}
 
 	public static function setUpBeforeClass()
 	{
-        $testUser = '';
-        $testPassword = '';
+		$testUser = '';
+		$testPassword = '';
 
-         $creditPilotPayment = new CreditPilotPayment($testUser, $testPassword, null, true);
+        $creditPilotPayment = new CreditPilotPayment($testUser, $testPassword, null, true);
 
         // prepare test DB connection
 		$creditPilotPayment->connectDb('mysql', 'localhost', 'creditpilot', 'creditpilot', 'creditpilot', 'test_');
@@ -93,5 +90,24 @@ class CreditPilotTest extends TestCase
 		$this->assertEquals(PaymentsInfo::C_STATUS_WAITING, $status);
 
 		$this->assertEmpty($creditPilotPayment->getErrorMessage(), $creditPilotPayment->getErrorMessage());
+	}
+
+	/**
+	 * Тест ошибки ID трансфера (уже существует)
+	 */
+	public function testThree()
+	{
+		$transferId = 1;
+
+		$creditPilotPayment = $this->creditPilotPayment;
+
+		$amount = round(rand(0, 10000) / 100, 2);
+
+		$creditPilotPayment->doTransfer($transferId, '4652060320881342', CreditPilotPayment::CHANNEL_CREDIT_PILOT_BANK_CARD, $amount);
+
+		$this->assertNotEmpty($creditPilotPayment->getErrorMessage());
+
+		$this->assertEquals(-20150,$creditPilotPayment->getCreditPilotErrorCode());
+		$this->assertEquals('Платеж с таким идентификатором уже существует (не уникальный идентификатор платежа dealerTransactionId для успешных транзакций данного пользователя)',$creditPilotPayment->getCreditPilotErrorMessage());
 	}
 }
