@@ -32,11 +32,11 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 	public $channelName = 'КредитПилот';
 
-	protected  $user = '';
-	protected  $password = '';
+	protected $user = '';
+	protected $password = '';
 
-	protected  $apiUrl = 'https://www.kp-dealer.ru:8080/KPDealerWeb/KPBossHttpServer';
-	protected  $apiUrlTest = 'https://test.creditpilot.ru:8080/KPDealerWeb/KPBossHttpServer';
+	protected $apiUrl = 'https://www.kp-dealer.ru:8080/KPDealerWeb/KPBossHttpServer';
+	protected $apiUrlTest = 'https://test.creditpilot.ru:8080/KPDealerWeb/KPBossHttpServer';
 
 	const PROVIDER_MOBILE_TEST = 540792152;
 	const PROVIDER_CARD_TEST = 100318717;
@@ -84,8 +84,8 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	public function __construct($user, $password, $providers, $test = false)
 	{
 		$this->test = $test;
-        $this->user = $user;
-        $this->password = $password;
+		$this->user = $user;
+		$this->password = $password;
 
 		parent::init();
 
@@ -654,6 +654,25 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	public function getErrorCode()
 	{
 		return $this->error;
+	}
+
+	/**
+	 * Временная ли это шибка?
+	 *
+	 * @return bool
+	 */
+	public function isTempError()
+	{
+		$temporaryErrors = array(
+			PaymentsInfo::C_ERROR_UNRECOGNIZED,
+			PaymentsInfo::C_ERROR_SERVER_IS_BUSY,
+		);
+
+		if (in_array($this->error, $temporaryErrors)) {
+			return true;
+		}
+
+		return false;
 	}
 }
 
