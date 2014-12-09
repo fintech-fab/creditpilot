@@ -294,10 +294,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			return $creditPilotTransfer->status;
 		}
 
-		if ($this->isError()) {
-			return $this->getErrorCode();
-		}
-
 		return false;
 	}
 
