@@ -55,7 +55,7 @@ CreditPilot Payment
 		$transfer = CreditPilot::whereRaw('transfer_queue_id = ' . $transferId)->first();
 
 		// запрашиваем статус трансфера
-		$status = $creditPilotPayment->getTransferStatus($transferId, CreditPilotPayment::CHANNEL_CREDIT_PILOT_BEELINE, '87654321');
+		$status = $creditPilotPayment->getTransferStatus($transferId, CreditPilotPayment::CHANNEL_CREDIT_PILOT_BEELINE, $transfer->bill_number);
 	}
 
 ```
