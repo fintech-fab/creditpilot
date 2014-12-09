@@ -442,11 +442,9 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$this->cleanup();
 
 		$timeBeforeRequest = time();
-		$sUrl = $this->_buildUrl($actionName, $methodArgs);
-		$ch = curl_init($sUrl);
-
+		$url = $this->_buildUrl($actionName, $methodArgs);
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_USERPWD, $this->user . ":" . $this->password);
-
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_TIMEOUT, PaymentsInfo::C_CURL_TIMEOUT);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, PaymentsInfo::C_CURL_CONNECT_TIMEOUT);
@@ -456,7 +454,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$resultHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		$this->_doParseResponse($response, $actionName, $ch);
-		$log = $this->_doPrepareLog($paymentId, $actionName, $sUrl, $resultHttpCode, $timeBeforeRequest);
+		$log = $this->_doPrepareLog($paymentId, $actionName, $url, $resultHttpCode, $timeBeforeRequest);
 
 		curl_close($ch);
 
@@ -605,9 +603,9 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	{
 		$sMethodArgs = '&' . http_build_query($aMethodArgs);
 		$sMethodArgs = rtrim($sMethodArgs, '&');
-		$sUrl = $this->apiUrl . '?actionName=' . $sActionName . $sMethodArgs;
+		$url = $this->apiUrl . '?actionName=' . $sActionName . $sMethodArgs;
 
-		return $sUrl;
+		return $url;
 	}
 
 	/**
