@@ -481,10 +481,15 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 * @param $resultHttpCode
 	 * @param $timeBeforeRequest
 	 *
+	 * @throws CreditPilotPaymentException
 	 * @return PaymentsLog
 	 */
 	private function _doPrepareLog($paymentId, $actionName, $url, $resultHttpCode, $timeBeforeRequest)
 	{
+		if(!isset($this->paymentLog)){
+			$this->doEnableLogger();
+		}
+
 		$this->paymentLog->prepare(
 			$this->channelId,
 			$this->getChannelName(),
