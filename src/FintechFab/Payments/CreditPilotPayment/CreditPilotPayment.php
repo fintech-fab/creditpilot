@@ -68,7 +68,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	protected $apiUrlTest = 'https://test.creditpilot.ru:8080/KPDealerWeb/KPBossHttpServer';
 
 	const PROVIDER_MOBILE_TEST = 540792152;
-	const PROVIDER_CARD_TEST = 657871990;
+	const PROVIDER_CARD_TEST = 347781607;
 
 	private static $providers = array(
 		self::CHANNEL_CREDIT_PILOT_TELE2     => self::PROVIDER_MOBILE_TEST,
