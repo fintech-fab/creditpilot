@@ -134,6 +134,11 @@ class CreditPilotTest extends TestCase
 
 		$this->assertEquals(PaymentsInfo::C_STATUS_WAITING, $status);
 
+		sleep(2);
+		$status = $creditPilotPayment->getTransferStatus($transferId, CreditPilotPayment::CHANNEL_CREDIT_PILOT_BANK_CARD, $transfer->bill_number);
+
+		$this->assertEquals(PaymentsInfo::C_STATUS_PAID, $status);
+
 
 		$this->assertEmpty($creditPilotPayment->getErrorMessage(), $creditPilotPayment->getErrorMessage());
 

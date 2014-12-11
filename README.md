@@ -36,7 +36,7 @@ CreditPilot Payment
     		CreditPilotPayment::CHANNEL_CREDIT_PILOT_MTS       => 540792152,
     		CreditPilotPayment::CHANNEL_CREDIT_PILOT_BEELINE   => 540792152,
     		CreditPilotPayment::CHANNEL_CREDIT_PILOT_MEGAFON   => 540792152,
-    		CreditPilotPayment::CHANNEL_CREDIT_PILOT_BANK_CARD => 100318717,
+    		CreditPilotPayment::CHANNEL_CREDIT_PILOT_BANK_CARD => 657871990,
 	);
 
 	$creditPilotPayment = new CreditPilotPayment('user', 'password', $providers);
