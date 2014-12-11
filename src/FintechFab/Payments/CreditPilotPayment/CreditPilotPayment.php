@@ -300,7 +300,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$result = $this->_performRequest('FINDPAY', $methodArgs, $transferId);
 
 		if (!$this->isError()) {
-
 			switch ($result->payment->result['resultCode']) {
 
 				case 20000:
@@ -552,6 +551,14 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$curlError = curl_error($ch);
 		$responseXml = null;
 
+		$resultHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		if(empty($responseText)||$resultHttpCode != '200'){
+			$this->_setError(PaymentsInfo::C_ERROR_TECHNICAL);
+
+			return;
+		}
+
 		if ($responseText) {
 			$responseXml = @simplexml_load_string($responseText);
 		}
@@ -655,14 +662,24 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			case -20140:
 				$this->error = PaymentsInfo::C_STATUS_ERROR;
 				break;
+			case -20135:
 			case -20150:
 				$this->error = PaymentsInfo::C_ERROR_PAYMENT_ID_ALREADY_EXIST;
 				break;
+			case -20101:
+			case -20102:
+			case -20103:
+			case -20110:
+			case -20137:
+			case -20141:
 			case -60100:
 				$this->error = PaymentsInfo::C_ERROR_AUTHORIZATION_ERROR;
 				break;
 			case -999998:
 				$this->error = PaymentsInfo::C_ERROR_TRANSFER_NOT_FOUND;
+				break;
+			case -20300:
+				$this->error =  PaymentsInfo::C_ERROR_TECHNICAL;
 				break;
 			default:
 				$this->error = PaymentsInfo::C_ERROR_UNRECOGNIZED;
@@ -714,7 +731,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	public function isTempError()
 	{
 		$temporaryErrors = array(
-			PaymentsInfo::C_ERROR_UNRECOGNIZED,
+			PaymentsInfo::C_ERROR_TECHNICAL,
 			PaymentsInfo::C_ERROR_SERVER_IS_BUSY,
 		);
 

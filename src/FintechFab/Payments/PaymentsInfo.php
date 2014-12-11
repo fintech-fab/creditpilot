@@ -42,7 +42,7 @@ class PaymentsInfo
 	const C_STATUS_CANCELLED = 6; //Отменен
 	const C_STATUS_PROCESSED = 7; //Оплачен и обработан системой
 	const C_STATUS_CASHBACK = 8; //Деньги возвращены
-	const C_STATUS_UNRECOGNIZED = 9999; //Неизвестный статус
+	const C_STATUS_UNRECOGNIZED = 999; //Неизвестный статус
 
 	public static $aStatuses = array(
 		self::C_STATUS_CREATED      => 'создан',
