@@ -183,14 +183,16 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	/**
 	 * Выполнить перевод
 	 *
-	 * @param $transferId      (ID перевода)
-	 * @param $numberPhoneCard (Номер телефона)
-	 * @param $channelId
-	 * @param $amount          (Сумма)
+	 * @param      $transferId      (ID перевода)
+	 * @param      $numberPhoneCard (Номер телефона)
+	 * @param      $channelId
+	 * @param      $amount          (Сумма)
+	 *
+	 * @param null $cardParams
 	 *
 	 * @return bool
 	 */
-	public function doTransfer($transferId, $numberPhoneCard, $channelId, $amount)
+	public function doTransfer($transferId, $numberPhoneCard, $channelId, $amount, $cardParams = null)
 	{
 		if (!$this->_setProvider($channelId)) {
 			return false;
@@ -208,7 +210,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		}
 
 		// проверка возможности платежа
-		$oCheckResponse = $this->_checkCanTransfer($transferId, $numberPhoneCard, $amount);
+		$oCheckResponse = $this->_checkCanTransfer($transferId, $numberPhoneCard, $amount, $cardParams);
 
 		if (!$oCheckResponse) {
 			return false;
@@ -229,6 +231,10 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			'amount'              => $amount,
 			'phoneNumber'         => $numberPhoneCard,
 		);
+
+		if(!empty($cardParams)){
+			array_merge($methodArgs, $cardParams);
+		}
 
 		$result = $this->_performRequest('PAY', $methodArgs, $transferId);
 
@@ -431,13 +437,15 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	/**
 	 * Проверка на возможность осуществления перевода
 	 *
-	 * @param $transferId
-	 * @param $phone
-	 * @param $amount
+	 * @param      $transferId
+	 * @param      $phone
+	 * @param      $amount
+	 *
+	 * @param null $cardParams
 	 *
 	 * @return bool
 	 */
-	public function _checkCanTransfer($transferId, $phone, $amount)
+	public function _checkCanTransfer($transferId, $phone, $amount, $cardParams = null)
 	{
 		$actionName = 'PREPARE';
 
@@ -447,6 +455,10 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			'amount'              => $amount,
 			'phoneNumber'         => $phone,
 		);
+
+		if(!empty($cardParams)){
+			array_merge($methodArgs, $cardParams);
+		}
 
 		$response = $this->_performRequest($actionName, $methodArgs, $transferId);
 
