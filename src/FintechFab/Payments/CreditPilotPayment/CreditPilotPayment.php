@@ -121,7 +121,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$this->workProviders = $providers;
 
 		// включен тестовый режим, установим другие параметры API и провайдеры
-		if ($this->test) {
+		if ($this->test && empty($providers)) {
 
 			// установим тестовых провайдеров
 			$this->workProviders = self::$providers;
