@@ -279,15 +279,12 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			return false;
 		}
 
-		if (empty($fromDate) || empty($toDate)) {
-			$methodArgs = array(
-				'serviceProviderId' => $this->provider,
-			);
-		} else {
+		$methodArgs = array();
+
+		if (!empty($fromDate) && !empty($toDate)) {
 			$methodArgs = array(
 				'fromDate'          => urlencode($fromDate),
 				'toDate'            => urlencode($toDate),
-				'serviceProviderId' => $this->provider,
 			);
 		}
 
