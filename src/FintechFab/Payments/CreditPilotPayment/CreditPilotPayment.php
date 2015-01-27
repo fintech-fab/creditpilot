@@ -22,6 +22,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CHANNEL_CREDIT_PILOT_TELE2 = 4;
 	const CHANNEL_CREDIT_PILOT_BANK_CARD = 5;
 
+	// внутренние коды сервис-провайдеров
 	const MOB_TELE2 = 1;
 	const MOB_BEELINE = 2;
 	const MOB_MTS = 3;
@@ -31,6 +32,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CARD_NOALPHA_RUS = 7;
 	const UNKNOWN = 99;
 
+	// ID сервис-провайдеров в КредитПилоте
 	const MOB_TELE2_ID1 = 262092827;
 	const MOB_TELE2_ID2 = 750739964;
 	const MOB_BEELINE_ID1 = 411492871;
@@ -45,6 +47,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CARD_NOALPHA_RUS_ID = 821410268;
 	const UNKNOWN_ID = 999999999;
 
+	// имена сервис-провайдеров
 	public static $serviceProvidersNames = array(
 		self::MOB_TELE2_ID1       => 'Теле2 без комиссии',
 		self::MOB_TELE2_ID2       => 'Теле2 без комиссии',
@@ -60,6 +63,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		self::UNKNOWN_ID          => 'Неизвестный сервисный номер',
 	);
 
+	// соответствие внутреннего кода и ID в КредитПилоте
 	public static $serviceProvidersCodes = array(
 		self::MOB_TELE2_ID1         => self::MOB_TELE2,
 		self::MOB_TELE2_ID2         => self::MOB_TELE2,
