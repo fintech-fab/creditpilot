@@ -56,6 +56,12 @@ CreditPilot Payment
 
 		// запрашиваем статус трансфера
 		$status = $creditPilotPayment->getTransferStatus($transferId, CreditPilotPayment::CHANNEL_CREDIT_PILOT_BEELINE, $transfer->bill_number);
+
+		//после getTransferStatus можно получить информацию о сервис-провайдере платежа
+
+		$serviceProviderId = $this->getServiceProviderId(); // ID провайдера в КредитПилоте, для одного провайдера может быть 2 разных ID
+        $serviceProviderCode = $this->getServiceProviderCode(); // внутренний код провайдера в библиотеке, всегда 1 код на провайдера
+        $serviceProviderName = $this->getServiceProviderName(); // текстовое имя сервис-провайдера
 	}
 
 ```

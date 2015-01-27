@@ -23,14 +23,14 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CHANNEL_CREDIT_PILOT_BANK_CARD = 5;
 
 	// внутренние коды сервис-провайдеров
-	const MOB_TELE2 = 1;
-	const MOB_BEELINE = 2;
-	const MOB_MTS = 3;
-	const MOB_MEGAFON = 4;
-	const CARD_ALPHA = 5;
-	const CARD_ALL_RUS = 6;
-	const CARD_NOALPHA_RUS = 7;
-	const UNKNOWN = 99;
+	const MOB_TELE2 = 'MOB_TELE2';
+	const MOB_BEELINE = 'MOB_BEELINE';
+	const MOB_MTS = 'MOB_MTS';
+	const MOB_MEGAFON = 'MOB_MEGAFON';
+	const CARD_ALPHA = 'CARD_ALPHA';
+	const CARD_ALL_RUS = 'CARD_ALL_RUS';
+	const CARD_NOALPHA_RUS = 'CARD_NOALPHA_RUS';
+	const UNKNOWN = 'UNKNOWN';
 
 	// ID сервис-провайдеров в КредитПилоте
 	const MOB_TELE2_ID1 = 262092827;
@@ -815,7 +815,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	/**
 	 * @return null
 	 */
-	public function getServiceProviderIdName()
+	public function getServiceProviderName()
 	{
 		return isset(self::$serviceProvidersNames[$this->serviceProviderId])
 			?self::$serviceProvidersNames[$this->serviceProviderId]
@@ -825,7 +825,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	/**
 	 * @return null
 	 */
-	public function getServiceProviderIdCode()
+	public function getServiceProviderCode()
 	{
 		return isset(self::$serviceProvidersCodes[$this->serviceProviderId])
 			?self::$serviceProvidersCodes[$this->serviceProviderId]
