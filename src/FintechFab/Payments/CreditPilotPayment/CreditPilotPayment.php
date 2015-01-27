@@ -22,6 +22,59 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	const CHANNEL_CREDIT_PILOT_TELE2 = 4;
 	const CHANNEL_CREDIT_PILOT_BANK_CARD = 5;
 
+	const MOB_TELE2 = 1;
+	const MOB_BEELINE = 2;
+	const MOB_MTS = 3;
+	const MOB_MEGAFON = 4;
+	const CARD_ALPHA = 5;
+	const CARD_ALL_RUS = 6;
+	const CARD_NOALPHA_RUS = 7;
+	const UNKNOWN = 99;
+
+	const MOB_TELE2_ID1 = 262092827;
+	const MOB_TELE2_ID2 = 750739964;
+	const MOB_BEELINE_ID1 = 411492871;
+	const MOB_BEELINE_ID2 = 890983449;
+	const MOB_MTS_ID1 = 540792152;
+	const MOB_MTS_ID2 = 648934845;
+	const MOB_MEGAFON_ID1 = 354046137;
+	const MOB_MEGAFON_ID2 = 453315258;
+
+	const CARD_ALPHA_ID = 276255497;
+	const CARD_ALL_RUS_ID = 119088347;
+	const CARD_NOALPHA_RUS_ID = 821410268;
+	const UNKNOWN_ID = 999999999;
+
+	public static $serviceProvidersNames = array(
+		self::MOB_TELE2_ID1       => 'Теле2 без комиссии',
+		self::MOB_TELE2_ID2       => 'Теле2 без комиссии',
+		self::MOB_BEELINE_ID1     => 'Билайн без комиссии',
+		self::MOB_BEELINE_ID2     => 'Билайн без комиссии',
+		self::MOB_MTS_ID1         => 'Мтс без комиссии',
+		self::MOB_MTS_ID2         => 'Мтс без комиссии',
+		self::MOB_MEGAFON_ID1     => 'Мегафон без комиссии',
+		self::MOB_MEGAFON_ID2     => 'Мегафон без комиссии',
+		self::CARD_ALPHA_ID       => 'Альфабанк пополнение карты',
+		self::CARD_ALL_RUS_ID     => 'Российские банки пополнение карты',
+		self::CARD_NOALPHA_RUS_ID => 'Россия пополнение карты (кроме Альфабанка)',
+		self::UNKNOWN_ID          => 'Неизвестный сервисный номер',
+	);
+
+	public static $serviceProvidersCodes = array(
+		self::MOB_TELE2_ID1         => self::MOB_TELE2,
+		self::MOB_TELE2_ID2         => self::MOB_TELE2,
+		self::MOB_BEELINE_ID1       => self::MOB_BEELINE,
+		self::MOB_BEELINE_ID2       => self::MOB_BEELINE,
+		self::MOB_MTS_ID1           => self::MOB_MTS,
+		self::MOB_MTS_ID2           => self::MOB_MTS,
+		self::MOB_MEGAFON_ID1       => self::MOB_MEGAFON,
+		self::MOB_MEGAFON_ID2       => self::MOB_MEGAFON,
+		self::CARD_ALPHA_ID       => self::CARD_ALPHA,
+		self::CARD_ALL_RUS_ID     => self::CARD_ALL_RUS,
+		self::CARD_NOALPHA_RUS_ID => self::CARD_NOALPHA_RUS,
+		self::UNKNOWN             => self::UNKNOWN,
+	);
+
 	public static $errorCodes = array(
 		//Ошибки при отправке платежа или при проверке состояния:
 		-20101 => 'В системе нет пользователя с таким логином (неправильный логин или пароль)',
@@ -60,6 +113,8 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	);
 
 	public $channelName = 'КредитПилот';
+
+	public $serviceProviderId = null;
 
 	protected $user = '';
 	protected $password = '';
@@ -175,6 +230,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$this->providerMinSum = null;
 		$this->providerMaxSum = null;
 		$this->error = null;
+		$this->serviceProviderId = null;
 
 		parent::cleanup();
 
@@ -283,8 +339,8 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		if (!empty($fromDate) && !empty($toDate)) {
 			$methodArgs = array(
-				'fromDate'          => urlencode($fromDate),
-				'toDate'            => urlencode($toDate),
+				'fromDate' => urlencode($fromDate),
+				'toDate'   => urlencode($toDate),
 			);
 		}
 
@@ -550,7 +606,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		$resultHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		if(empty($responseText)||$resultHttpCode != '200'){
+		if (empty($responseText) || $resultHttpCode != '200') {
 			$this->_setError(PaymentsInfo::C_ERROR_TECHNICAL);
 
 			return;
@@ -581,6 +637,10 @@ class CreditPilotPayment extends PaymentChannelAbstract
 				$resultCode = '-999998';
 			}
 			$existResultCode = strlen($resultCode) > 0;
+
+			if (isset($responseXml->payment->userData->serviceProviderId)) {
+				$this->serviceProviderId = $responseXml->payment->userData->serviceProviderId;
+			}
 		}
 
 		// внятный ответ при запросе на провайдеров
@@ -676,7 +736,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 				$this->error = PaymentsInfo::C_ERROR_TRANSFER_NOT_FOUND;
 				break;
 			case -20300:
-				$this->error =  PaymentsInfo::C_ERROR_TECHNICAL;
+				$this->error = PaymentsInfo::C_ERROR_TECHNICAL;
 				break;
 			default:
 				$this->error = PaymentsInfo::C_ERROR_UNRECOGNIZED;
@@ -714,9 +774,10 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 */
 	public function getCreditPilotErrorMessage()
 	{
-		if(isset(self::$errorCodes[$this->errorCode])){
+		if (isset(self::$errorCodes[$this->errorCode])) {
 			return self::$errorCodes[$this->errorCode];
 		}
+
 		return null;
 	}
 
@@ -737,6 +798,34 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getServiceProviderId()
+	{
+		return $this->serviceProviderId;
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getServiceProviderIdName()
+	{
+		return isset(self::$serviceProvidersNames[$this->serviceProviderId])
+			?self::$serviceProvidersNames[$this->serviceProviderId]
+			:self::$serviceProvidersNames[self::UNKNOWN_ID];
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getServiceProviderIdCode()
+	{
+		return isset(self::$serviceProvidersCodes[$this->serviceProviderId])
+			?self::$serviceProvidersCodes[$this->serviceProviderId]
+			:self::UNKNOWN;
 	}
 }
 
