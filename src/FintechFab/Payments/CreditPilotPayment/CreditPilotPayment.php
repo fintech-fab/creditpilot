@@ -645,7 +645,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		if(!$curlError && 'FINDPAY' == $actionName){
 			if (isset($responseXml->payment->userData->serviceProviderId)) {
-				$this->serviceProviderId = $responseXml->payment->userData->serviceProviderId;
+				$this->serviceProviderId = (int)$responseXml->payment->userData->serviceProviderId;
 			}
 		}
 
