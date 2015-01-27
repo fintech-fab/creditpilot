@@ -641,7 +641,9 @@ class CreditPilotPayment extends PaymentChannelAbstract
 				$resultCode = '-999998';
 			}
 			$existResultCode = strlen($resultCode) > 0;
+		}
 
+		if(!$curlError && 'FINDPAY' == $actionName){
 			if (isset($responseXml->payment->userData->serviceProviderId)) {
 				$this->serviceProviderId = $responseXml->payment->userData->serviceProviderId;
 			}
