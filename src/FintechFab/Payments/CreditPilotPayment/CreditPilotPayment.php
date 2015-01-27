@@ -76,7 +76,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		self::CARD_ALPHA_ID       => self::CARD_ALPHA,
 		self::CARD_ALL_RUS_ID     => self::CARD_ALL_RUS,
 		self::CARD_NOALPHA_RUS_ID => self::CARD_NOALPHA_RUS,
-		self::UNKNOWN             => self::UNKNOWN,
+		self::UNKNOWN_ID          => self::UNKNOWN,
 	);
 
 	public static $errorCodes = array(
