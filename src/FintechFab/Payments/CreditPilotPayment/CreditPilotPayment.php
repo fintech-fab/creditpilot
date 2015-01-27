@@ -65,14 +65,14 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 	// соответствие внутреннего кода и ID в КредитПилоте
 	public static $serviceProvidersCodes = array(
-		self::MOB_TELE2_ID1         => self::MOB_TELE2,
-		self::MOB_TELE2_ID2         => self::MOB_TELE2,
-		self::MOB_BEELINE_ID1       => self::MOB_BEELINE,
-		self::MOB_BEELINE_ID2       => self::MOB_BEELINE,
-		self::MOB_MTS_ID1           => self::MOB_MTS,
-		self::MOB_MTS_ID2           => self::MOB_MTS,
-		self::MOB_MEGAFON_ID1       => self::MOB_MEGAFON,
-		self::MOB_MEGAFON_ID2       => self::MOB_MEGAFON,
+		self::MOB_TELE2_ID1       => self::MOB_TELE2,
+		self::MOB_TELE2_ID2       => self::MOB_TELE2,
+		self::MOB_BEELINE_ID1     => self::MOB_BEELINE,
+		self::MOB_BEELINE_ID2     => self::MOB_BEELINE,
+		self::MOB_MTS_ID1         => self::MOB_MTS,
+		self::MOB_MTS_ID2         => self::MOB_MTS,
+		self::MOB_MEGAFON_ID1     => self::MOB_MEGAFON,
+		self::MOB_MEGAFON_ID2     => self::MOB_MEGAFON,
 		self::CARD_ALPHA_ID       => self::CARD_ALPHA,
 		self::CARD_ALL_RUS_ID     => self::CARD_ALL_RUS,
 		self::CARD_NOALPHA_RUS_ID => self::CARD_NOALPHA_RUS,
@@ -817,9 +817,13 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 */
 	public function getServiceProviderName()
 	{
+		if (!isset($this->serviceProviderId)) {
+			return self::$serviceProvidersNames[self::UNKNOWN_ID];
+		}
+
 		return isset(self::$serviceProvidersNames[$this->serviceProviderId])
-			?self::$serviceProvidersNames[$this->serviceProviderId]
-			:self::$serviceProvidersNames[self::UNKNOWN_ID];
+			? self::$serviceProvidersNames[$this->serviceProviderId]
+			: self::$serviceProvidersNames[self::UNKNOWN_ID];
 	}
 
 	/**
@@ -827,9 +831,13 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 */
 	public function getServiceProviderCode()
 	{
+		if (!isset($this->serviceProviderId)) {
+			return self::UNKNOWN;
+		}
+
 		return isset(self::$serviceProvidersCodes[$this->serviceProviderId])
-			?self::$serviceProvidersCodes[$this->serviceProviderId]
-			:self::UNKNOWN;
+			? self::$serviceProvidersCodes[$this->serviceProviderId]
+			: self::UNKNOWN;
 	}
 }
 
