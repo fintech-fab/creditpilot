@@ -841,6 +841,78 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			? self::$serviceProvidersCodes[$this->serviceProviderId]
 			: self::UNKNOWN;
 	}
+
+	/**
+	 * Получить ID провайдеров по номеру телефона
+	 *
+	 * @param string $phone
+	 *
+	 * @return array|null
+	 */
+	public function getProviderIds($phone)
+	{
+		$response = $this->_performProviderIdRequest($phone);
+
+		if (!$response) {
+			return null;
+		}
+
+		return $this->_doParseProviderIdResponse($response);
+	}
+
+	/**
+	 * @param string $phone
+	 *
+	 * @return string|null
+	 */
+	private function _performProviderIdRequest($phone)
+	{
+		$url = $this->apiUrl . '?actionName=PHONERANGES&phoneNumber=' . $phone;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_USERPWD, $this->user . ":" . $this->password);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, PaymentsInfo::C_CURL_TIMEOUT);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, PaymentsInfo::C_CURL_CONNECT_TIMEOUT);
+
+		$response = curl_exec($ch);
+		$resultHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close($ch);
+
+		if ($resultHttpCode !== 200 || !$response) {
+			$this->error = PaymentsInfo::C_ERROR_TECHNICAL;
+
+			return null;
+		}
+
+		return $response;
+	}
+
+	/**
+	 * @param string $response
+	 *
+	 * @return array|null
+	 */
+	private function _doParseProviderIdResponse($response)
+	{
+		/**
+		 * @var \stdClass $responseXml
+		 */
+		$responseXml = @simplexml_load_string($response);
+
+		// это не providerIds, а какая-то ошибка
+		if (isset($responseXml->result)) {
+			$this->_setError(PaymentsInfo::C_ERROR_UNRECOGNIZED);
+
+			return null;
+		}
+
+		if (!isset($responseXml->phoneRange['providerIds'])) {
+			return null;
+		}
+
+		return explode(',', strval($responseXml->phoneRange['providerIds']));
+	}
 }
 
 /**
