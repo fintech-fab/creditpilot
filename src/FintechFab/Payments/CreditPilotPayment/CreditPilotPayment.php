@@ -466,6 +466,9 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 			if (is_null($params)) {
 				$params = new CreditPilotProviderParams;
+			} else {
+				$this->providerMinSum = $params->sum_min;
+				$this->providerMaxSum = $params->sum_max;
 			}
 
 			$response = $this->_performRequest('providers2', [], null, 300, 300);
@@ -484,6 +487,9 @@ class CreditPilotPayment extends PaymentChannelAbstract
 						$params->sum_max = $provider->maxsum;
 
 						$params->save();
+
+						$this->providerMinSum = $params->sum_min;
+						$this->providerMaxSum = $params->sum_max;
 
 						return true;
 					}
