@@ -146,8 +146,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	);
 
 	private $provider = null;
-	private $providerMinSum = null;
-	private $providerMaxSum = null;
 	private $workProviders = array();
 
 	protected $error = null;
@@ -166,9 +164,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		return false;
 	}
 
-	/**
-	 *
-	 */
 	public function __construct($user, $password, $providers, $test = false)
 	{
 		$this->test = $test;
@@ -231,8 +226,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	{
 
 		$this->provider = null;
-		$this->providerMinSum = null;
-		$this->providerMaxSum = null;
 		$this->error = null;
 		$this->serviceProviderId = null;
 
@@ -253,17 +246,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	public function doTransfer($transferId, $numberPhoneCard, $channelId, $amount)
 	{
 		if (!$this->_setProvider($channelId)) {
-			return false;
-		}
-		// проверяем ограничения по сумме
-		if ($amount < $this->providerMinSum) {
-			$this->_setError(0);
-
-			return false;
-		}
-		if ($amount > $this->providerMaxSum) {
-			$this->_setError(1);
-
 			return false;
 		}
 
@@ -428,79 +410,10 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		}
 
-		$providerId = $this->workProviders[$channelId];
-
-		// не найден у агрегатора
-		if (!$this->_getProviderData($providerId)) {
-			return false;
-		}
-
 		$this->channelId = $channelId;
 
 		return true;
 
-	}
-
-	/**
-	 * Получить данные провайдера
-	 *
-	 * @param $providerId
-	 *
-	 * @return bool
-	 */
-	private function _getProviderData($providerId)
-	{
-		// $this->providerMinSum
-		// $this->providerMaxSum
-		$params = (new CreditPilotProviderParams)
-			->where('provider_id', $providerId)
-			->first();
-
-		if (
-			is_null($params) ||
-			$params->updated_at->diffInDays() >= 1 ||
-			(
-				$params->sum_min == 0 && $params->sum_max == 0
-			)
-		) {
-
-			if (is_null($params)) {
-				$params = new CreditPilotProviderParams;
-			} else {
-				$this->providerMinSum = $params->sum_min;
-				$this->providerMaxSum = $params->sum_max;
-			}
-
-			$response = $this->_performRequest('providers2', [], null, 300, 300);
-			if (!$this->isError()) {
-				$providers = $response->provider;
-			} else {
-				$providers = [];
-			}
-
-			if ($providers) {
-				foreach ($providers as $provider) {
-					// наш провайдер есть в списке, определяем лимиты платежа
-					if ($provider->id == $providerId) {
-						$params->provider_id = $providerId;
-						$params->sum_min = $provider->minsum;
-						$params->sum_max = $provider->maxsum;
-
-						$params->save();
-
-						$this->providerMinSum = $params->sum_min;
-						$this->providerMaxSum = $params->sum_max;
-
-						return true;
-					}
-				}
-			}
-
-			return false;
-
-		}
-
-		return !is_null($params);
 	}
 
 	/**
