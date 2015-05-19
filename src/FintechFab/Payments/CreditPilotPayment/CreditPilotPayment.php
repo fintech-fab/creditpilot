@@ -450,39 +450,51 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 */
 	private function _getProviderData($providerId)
 	{
+		// $this->providerMinSum
+		// $this->providerMaxSum
+		$params = (new CreditPilotProviderParams)
+			->where('provider_id', $providerId)
+			->first();
 
-		// сохраняем список провайдеров в статике
-		static $providers = null;
-		if (null === $providers) {
+		if (
+			is_null($params) ||
+			$params->updated_at->diffInDays() >= 1 ||
+			(
+				$params->sum_min == 0 && $params->sum_max == 0
+			)
+		) {
 
-			// получаем список провайдеров от внешней системы
-			/**
-			 * @var \SimpleXMLElement $response
-			 */
-			$response = $this->_performRequest('providers2');
+			if (is_null($params)) {
+				$params = new CreditPilotProviderParams;
+			}
+
+			$response = $this->_performRequest('providers2', [], null, 300, 300);
 			if (!$this->isError()) {
 				$providers = $response->provider;
 			} else {
-				$providers = array();
+				$providers = [];
 			}
-		}
 
-		$this->provider = $providerId;
+			if ($providers) {
+				foreach ($providers as $provider) {
+					// наш провайдер есть в списке, определяем лимиты платежа
+					if ($provider->id == $providerId) {
+						$params->provider_id = $providerId;
+						$params->sum_min = $provider->minsum;
+						$params->sum_max = $provider->maxsum;
 
-		if ($providers) {
-			foreach ($providers as $provider) {
-				// наш провайдер есть в списке, определяем лимиты платежа
-				if ($provider->id == $providerId) {
-					$this->providerMinSum = $provider->minsum;
-					$this->providerMaxSum = $provider->maxsum;
+						$params->save();
 
-					return true;
+						return true;
+					}
 				}
 			}
+
+			return false;
+
 		}
 
-		return false;
-
+		return !is_null($params);
 	}
 
 	/**
@@ -519,10 +531,12 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 * @param       $actionName
 	 * @param array $methodArgs
 	 * @param       $paymentId
+	 * @param int   $timeout
+	 * @param int   $connectTimeout
 	 *
-	 * @return bool|StdClass
+	 * @return bool|stdClass
 	 */
-	private function _performRequest($actionName, $methodArgs = array(), $paymentId = null)
+	private function _performRequest($actionName, $methodArgs = array(), $paymentId = null, $timeout = PaymentsInfo::C_CURL_TIMEOUT, $connectTimeout = PaymentsInfo::C_CURL_CONNECT_TIMEOUT)
 	{
 		$this->cleanup();
 
@@ -531,8 +545,8 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_USERPWD, $this->user . ":" . $this->password);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, PaymentsInfo::C_CURL_TIMEOUT);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, PaymentsInfo::C_CURL_CONNECT_TIMEOUT);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
 
 		$response = curl_exec($ch);
 
@@ -643,7 +657,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 			$existResultCode = strlen($resultCode) > 0;
 		}
 
-		if(!$curlError && 'FINDPAY' == $actionName){
+		if (!$curlError && 'FINDPAY' == $actionName) {
 			if (isset($responseXml->payment->userData->serviceProviderId)) {
 				$this->serviceProviderId = (int)$responseXml->payment->userData->serviceProviderId;
 			}
