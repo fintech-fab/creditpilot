@@ -57,8 +57,8 @@ class PaymentsInfo
 		self::C_STATUS_UNRECOGNIZED => 'неизвестно',
 	);
 
-	const C_CURL_CONNECT_TIMEOUT = 10; //таймаут для подключения curl
-	const C_CURL_TIMEOUT = 20; //таймаут для получения ответа curl
+	const C_CURL_CONNECT_TIMEOUT = 300; //таймаут для подключения curl
+	const C_CURL_TIMEOUT = 300; //таймаут для получения ответа curl
 
 	public static $aErrorMessages = array(
 		self::C_ERROR_REQUEST_INCORRECT          => 'Некорректный запрос',
