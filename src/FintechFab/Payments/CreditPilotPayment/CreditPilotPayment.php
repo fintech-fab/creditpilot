@@ -275,8 +275,6 @@ class CreditPilotPayment extends PaymentChannelAbstract
 		$result = $this->_performRequest('PAY', $methodArgs, $transferId);
 
 		if ($this->isError()) {
-			dd(4);
-
 			return false;
 		}
 
