@@ -241,7 +241,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 	 * @param $channelId
 	 * @param $amount          (Сумма)
 	 *
-	 * @return bool
+	 * @return string
 	 */
 	public function doTransfer($transferId, $numberPhoneCard, $channelId, $amount)
 	{
@@ -293,7 +293,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		$creditPilot->save();
 
-		return true;
+		return current($result->billNumber);
 	}
 
 	/**
