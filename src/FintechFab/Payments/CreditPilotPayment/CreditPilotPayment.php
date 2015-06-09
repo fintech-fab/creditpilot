@@ -293,7 +293,7 @@ class CreditPilotPayment extends PaymentChannelAbstract
 
 		$creditPilot->save();
 
-		return true;
+		return current($result->billNumber);
 	}
 
 	/**
